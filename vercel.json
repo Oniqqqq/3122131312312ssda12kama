@@ -1,1 +1,10 @@
-{}
+{
+  "buildCommand": "cd artifacts/penzgidromash-replica && pnpm install --no-frozen-lockfile && pnpm run build",
+  "outputDirectory": "artifacts/penzgidromash-replica/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
