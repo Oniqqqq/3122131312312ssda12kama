@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { ArrowRight } from "lucide-react";
 
 const projects = [
   {
@@ -191,7 +192,7 @@ export function Projects() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Все объекты →
+            Все объекты <ArrowRight size={14} />
           </a>
         </div>
       </div>

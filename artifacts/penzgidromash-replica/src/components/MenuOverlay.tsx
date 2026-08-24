@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+
 type MenuOverlayProps = { open: boolean; onClose: () => void };
 
 const links = [
@@ -25,7 +27,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
           Полный цикл — от проектирования КМД до поставки готовых металлоконструкций на объект заказчика.
           <div className="menu-aside-contacts">
             <a href="tel:+78800600979">8 800-600-97-99</a>
-            <a href="https://kzmktempo.ru" target="_blank" rel="noopener noreferrer">kzmktempo.ru →</a>
+            <a href="https://kzmktempo.ru" target="_blank" rel="noopener noreferrer">kzmktempo.ru <ArrowUpRight size={16} /></a>
           </div>
         </aside>
       </div>

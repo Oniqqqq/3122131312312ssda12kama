@@ -1,4 +1,4 @@
-import { ArrowUpRight, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { FadeUpScroll, WordReveal } from "./ScrollAnimations";
 
@@ -31,7 +31,7 @@ export function CTA() {
                 onClick={() => { setOpen(true); setSent(false); }}
                 data-testid="button-open-contact"
               >
-                Обсудить проект <ArrowUpRight size={16} strokeWidth={1.2} />
+                Обсудить проект <ArrowRight size={16} strokeWidth={1.2} />
               </button>
             </FadeUpScroll>
           </div>
@@ -62,7 +62,7 @@ export function CTA() {
               <input required name="name" placeholder="Ваше имя" aria-label="Ваше имя" data-testid="input-contact-name" />
               <input required name="contact" placeholder="Телефон или e-mail" aria-label="Телефон или e-mail" data-testid="input-contact-contact" />
               <textarea name="message" placeholder="Коротко о задаче (вид конструкций, объём, сроки)" aria-label="Коротко о задаче" data-testid="input-contact-message" />
-              <button type="submit" data-testid="button-submit-contact">Отправить запрос →</button>
+              <button type="submit" data-testid="button-submit-contact">Отправить запрос <ArrowRight size={16} /></button>
             </form>
           )}
         </div>
