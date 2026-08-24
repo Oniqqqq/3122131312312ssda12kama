@@ -1,19 +1,39 @@
+import { AnimatedStat, FadeUpScroll, WordReveal } from "./ScrollAnimations";
+
 export function Advantages() {
   return (
     <section className="advantages" id="advantages" data-testid="section-advantages">
       <div className="container advantages-grid">
         <div>
-          <div className="eyebrow">02 / основания</div>
-          <h2 className="advantages-title display">Точно.<br />Надолго.</h2>
+          <FadeUpScroll>
+            <h2 className="advantages-title display">Точно.<br />Надёжно.</h2>
+          </FadeUpScroll>
         </div>
         <div>
           <div className="advantage-statement">
-            <p>Мы не просто изготавливаем оборудование — <span className="orange">встраиваем его в жизнь производства.</span></p>
+            <WordReveal
+              text="Мы не просто изготавливаем металлоконструкции — создаём несущий каркас вашего производства."
+              as="p"
+              accentWords={["создаём", "несущий", "каркас"]}
+            />
           </div>
           <div className="stats-row">
-            <div className="stat"><div className="stat-value">69<sup>лет</sup></div><span className="stat-label">проектируем и создаём оборудование</span></div>
-            <div className="stat"><div className="stat-value">12<sup>млн</sup></div><span className="stat-label">единиц оборудования в эксплуатации</span></div>
-            <div className="stat"><div className="stat-value">34<sup>страны</sup></div><span className="stat-label">география поставок и партнёрств</span></div>
+            <AnimatedStat
+              target={23}
+              suffix="года"
+              isSup
+              label="в производстве металлоконструкций"
+            />
+            <AnimatedStat
+              target={30}
+              suffix="+"
+              label="реализованных проектов по всей России"
+            />
+            <AnimatedStat
+              target={100}
+              suffix="%"
+              label="контроль качества по ГОСТ и ISO"
+            />
           </div>
         </div>
       </div>

@@ -13,7 +13,6 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
   return (
     <div className={`menu-overlay ${open ? "is-open" : ""}`} aria-hidden={!open}>
       <div className="container menu-grid">
-        <span className="menu-index">НАВИГАЦИЯ<br />/ 2024—25</span>
         <nav className="menu-list" aria-label="Основная навигация">
           {links.map(([index, label, href]) => (
             <div key={href}>
@@ -22,8 +21,12 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
           ))}
         </nav>
         <aside className="menu-aside">
-          <strong>Производим то,<br />что держит систему.</strong>
-          Полный цикл — от инженерного расчёта до монтажа оборудования на объекте заказчика.
+          <strong>Строим то,<br />что держит форму.</strong>
+          Полный цикл — от проектирования КМД до поставки готовых металлоконструкций на объект заказчика.
+          <div className="menu-aside-contacts">
+            <a href="tel:+78800600979">8 800-600-97-99</a>
+            <a href="https://kzmktempo.ru" target="_blank" rel="noopener noreferrer">kzmktempo.ru →</a>
+          </div>
         </aside>
       </div>
     </div>

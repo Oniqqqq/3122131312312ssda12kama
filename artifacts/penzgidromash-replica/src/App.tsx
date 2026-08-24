@@ -7,6 +7,7 @@ import { Hero } from "./components/Hero";
 import { IndustrialScene } from "./components/IndustrialScene";
 import { Industries } from "./components/Industries";
 import { Projects } from "./components/Projects";
+import { FadeUpScroll, WordReveal } from "./components/ScrollAnimations";
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
@@ -20,27 +21,51 @@ function Home() {
       <Header />
       <main>
         <Hero />
+
+        {/* ── MANIFESTO SECTION ── */}
         <section className="manifesto" id="about" data-testid="section-about">
           <div className="container manifesto-grid">
-            <div><div className="eyebrow">01 / о компании</div><h2 className="manifesto-title display">Металл<br />смысл<br />системы</h2></div>
+            <FadeUpScroll>
+              <h2 className="manifesto-title display">
+                Металл<br />несёт<br />нагрузку.
+              </h2>
+            </FadeUpScroll>
             <div className="manifesto-copy">
-              <p>С 1955 года мы превращаем металл в <strong>надёжные технологические решения.</strong> Наше оборудование работает там, где цена ошибки измеряется остановкой производства.</p>
-              <p className="manifesto-note">Полный цикл производства в Пензе: конструкторский расчёт, заготовка, сварка, контроль, испытания и поставка.</p>
+              <WordReveal
+                text="С 2002 года мы производим металлоконструкции для крупнейших промышленных объектов России — нефтегазовых комплексов, ТЭЦ, нефтехимических заводов и торговых центров."
+                as="p"
+                accentWords={["нефтегазовых", "комплексов,", "ТЭЦ,", "нефтехимических", "заводов"]}
+              />
+              <FadeUpScroll delay={0.2}>
+                <p className="manifesto-note">
+                  Полный цикл в Набережных Челнах: проектирование КМД, заготовка, сварка, контроль качества, антикоррозионная обработка и поставка на объект.
+                </p>
+              </FadeUpScroll>
             </div>
           </div>
         </section>
+
         <Advantages />
+
+        {/* ── STORY SECTION ── */}
         <section className="story" data-testid="section-story">
           <div className="story-sticky">
-            <div className="story-copy">
-              <div className="eyebrow">03 / внутри процесса</div>
-              <h2 className="story-title display">Расчёт<br />держит<br />форму.</h2>
-              <p className="story-description">Каждый аппарат начинается не с листа металла, а с понимания среды, давления и будущего режима работы.</p>
+            <div className="container story-copy">
+              <FadeUpScroll>
+                <h2 className="story-title display">
+                  Расчёт<br />держит<br />форму.
+                </h2>
+              </FadeUpScroll>
+              <FadeUpScroll delay={0.15}>
+                <p className="story-description">
+                  Каждая конструкция начинается не с листа металла, а с <span style={{ color: "var(--blue-light)", fontWeight: 600 }}>проектной документации</span>, нагрузок и условий эксплуатации объекта.
+                </p>
+              </FadeUpScroll>
             </div>
             <IndustrialScene mode="story" />
-            <div className="story-progress"><span>SCROLL TO INSPECT</span><i><b /></i><span>01—04</span></div>
           </div>
         </section>
+
         <Industries />
         <Catalog />
         <Projects />

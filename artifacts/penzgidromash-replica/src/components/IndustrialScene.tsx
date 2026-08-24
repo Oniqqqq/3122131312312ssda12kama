@@ -9,11 +9,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 type IndustrialSceneProps = { mode?: "hero" | "story"; className?: string };
 
-// Procedural fallback materials
-const steel = new THREE.MeshStandardMaterial({ color: 0x929089, metalness: 0.88, roughness: 0.3 });
-const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xc5bdb0, metalness: 0.92, roughness: 0.24 });
-const accentBlue = new THREE.MeshStandardMaterial({ color: 0x1f5ba3, metalness: 0.82, roughness: 0.3 });
-const warning = new THREE.MeshStandardMaterial({ color: 0xe8a020, metalness: 0.55, roughness: 0.35 });
+// MacBook Silver — bright polished aluminium, blue only from rim light
+const steel = new THREE.MeshStandardMaterial({ color: 0xd0d0d0, metalness: 0.90, roughness: 0.18 });
+const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, metalness: 0.92, roughness: 0.14 });
+const accentBlue = new THREE.MeshStandardMaterial({ color: 0xbcbcbc, metalness: 0.88, roughness: 0.20 });
+const warning = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, metalness: 0.85, roughness: 0.22 });
 
 export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,37 +42,96 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       return;
     }
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
-    camera.position.set(mode === "hero" ? 5.2 : 5.0, 2.4, 6.8);
-    camera.lookAt(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(20, 1, 0.1, 100);
+    // Camera tuned: model centered in right column, fully visible
+    camera.position.set(mode === "hero" ? 6.5 : 5.8, 3.5, mode === "hero" ? 9.0 : 7.2);
+    camera.lookAt(0, 0.5, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.15;
 
-    const ambient = new THREE.HemisphereLight(0xd7d0c3, 0x181816, 1.35);
+    // Neutral warm fill — no colour cast on the model body
+    const ambient = new THREE.HemisphereLight(0xd8d4ce, 0x1c1c1c, 0.9);
     scene.add(ambient);
-    const key = new THREE.DirectionalLight(0xffead7, 3.4);
+    // Warm key from upper-left — reveals the grey metal form
+    const key = new THREE.DirectionalLight(0xfff5e8, 2.8);
     key.position.set(-4, 6, 7);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x4e88c7, 2.1);
+    // Cold blue rim from back-right — this is the ONLY blue accent (reflection effect)
+    const rim = new THREE.DirectionalLight(0x3a78c4, 3.2);
     rim.position.set(5, 1, -4);
     scene.add(rim);
+    // Subtle fill from below to lift shadows
+    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
+    fill.position.set(0, -3, 3);
+    scene.add(fill);
 
     const group = new THREE.Group();
     group.rotation.order = "YXZ";
-    // Set initial orientation (standing straight on the ground, level X and Z)
     if (mode === "hero") {
       group.rotation.set(0, -0.42, 0);
+      group.position.set(0, 0.5, 0); // lift so base is in frame
     } else {
       group.rotation.set(0, -0.35, 0);
+      group.position.set(1.5, 0.1, 0); // centered in right area of container grid
     }
     scene.add(group);
     sceneGroupRef.current = group;
+    group.scale.setScalar(0.82);
+
+    // Inner group for user drag rotation
+    const userDragGroup = new THREE.Group();
+    group.add(userDragGroup);
+
     const modelRoot = new THREE.Group();
     modelRoot.name = "Imported tank model";
-    group.add(modelRoot);
+    userDragGroup.add(modelRoot);
     let modelReady = false;
+
+    // Manual pointer drag interaction
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let userRotX = 0;
+    let userRotY = 0;
+
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      userRotY += deltaX * 0.007;
+      userRotX += deltaY * 0.007;
+      userRotX = THREE.MathUtils.clamp(userRotX, -Math.PI / 2.2, Math.PI / 2.2);
+
+      userDragGroup.rotation.y = userRotY;
+      userDragGroup.rotation.x = userRotX;
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      if (!isDragging) return;
+      isDragging = false;
+      try {
+        canvas.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointercancel", onPointerUp);
 
     // Setup local Draco decoder for compressed model
     const dracoLoader = new DRACOLoader();
@@ -89,9 +148,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
             // Keep the model's baked steel-gray material, just ensure shadows
             object.castShadow = true;
             object.receiveShadow = true;
-            // If material exists, tweak to match scene lighting
+            // MacBook Silver — bright polished aluminium
             if (object.material instanceof THREE.MeshStandardMaterial) {
-              object.material.envMapIntensity = 0.6;
+              object.material.color.set(0xd4d4d4);
+              object.material.metalness = 0.92;
+              object.material.roughness = 0.12;
+              object.material.envMapIntensity = 0.75;
               object.material.needsUpdate = true;
             }
           }
@@ -126,17 +188,17 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
 
     if (mode === "hero") {
       scrollTimeline
-        .to(camera.position, { x: 4.4, y: 2.2, z: 6.2, duration: 1 }, 0)
+        .to(camera.position, { x: 5.8, y: 3.0, z: 8.2, duration: 1 }, 0)
         .to(group.rotation, { x: 0, y: -0.1, z: 0, duration: 1 }, 0)
-        .to(group.position, { x: -0.12, y: 0.05, duration: 1 }, 0)
-        .to(group.scale, { x: 1.05, y: 1.05, z: 1.05, duration: 1 }, 0);
+        .to(group.position, { x: -0.05, y: 0, duration: 1 }, 0)
+        .to(group.scale, { x: 0.85, y: 0.85, z: 0.85, duration: 1 }, 0);
     } else {
-      // Story mode: model stays level and upright throughout sticky section scroll
+      // Story: positioned in right column for balanced layout with left text
       scrollTimeline
-        .to(camera.position, { x: 4.5, y: 1.8, z: 5.8, duration: 1 }, 0)
+        .to(camera.position, { x: 5.6, y: 3.0, z: 8.0, duration: 1 }, 0)
         .to(group.rotation, { x: 0, y: -0.05, z: 0, duration: 1 }, 0)
-        .to(group.position, { x: 0, y: 0, duration: 1 }, 0)
-        .to(group.scale, { x: 1.1, y: 1.1, z: 1.1, duration: 1 }, 0);
+        .to(group.position, { x: 1.5, y: 0.1, duration: 1 }, 0)
+        .to(group.scale, { x: 0.80, y: 0.80, z: 0.80, duration: 1 }, 0);
     }
 
     let frame = 0;
@@ -154,6 +216,13 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       if (!reduceMotion && sceneGroupRef.current && !scrollTimeline.scrollTrigger?.isActive) {
         sceneGroupRef.current.rotation.y += 0.00025;
       }
+      // Smoothly return user drag rotation to 0 so default scroll animation seamlessly resumes
+      if (!isDragging) {
+        userRotX += (0 - userRotX) * 0.045;
+        userRotY += (0 - userRotY) * 0.045;
+        userDragGroup.rotation.x = userRotX;
+        userDragGroup.rotation.y = userRotY;
+      }
       renderer.render(scene, camera);
       frame = requestAnimationFrame(render);
     };
@@ -165,6 +234,10 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       active = false;
       cancelAnimationFrame(frame);
       observer.disconnect();
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
       scrollTimeline.scrollTrigger?.kill();
       scrollTimeline.kill();
       group.traverse((object) => {
@@ -179,7 +252,7 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     };
   }, [mode]);
 
-  return <canvas ref={canvasRef} className={`scene-canvas ${className}`} aria-label="Трёхмерная модель промышленного сепаратора" data-testid={`canvas-industrial-scene-${mode}`} />;
+  return <canvas ref={canvasRef} className={`scene-canvas ${className}`} aria-label="Трёхмерная модель промышленной металлоконструкции" data-testid={`canvas-industrial-scene-${mode}`} />;
 }
 
 function mountFallbackScene(canvas: HTMLCanvasElement, host: HTMLElement, mode: "hero" | "story") {

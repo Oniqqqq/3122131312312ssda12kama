@@ -6,14 +6,13 @@ export function Hero() {
     <section className="hero" id="top" data-testid="section-hero">
       <div className="container">
         <div className="hero-copy">
-          <div className="hero-kicker eyebrow">Пензенский завод / 01</div>
-          <h1 className="hero-title display"><span>Создаём</span><span className="outline">давление.</span></h1>
-          <p className="hero-summary"><b>Пензгидромаш</b> — промышленное оборудование для процессов, где нет права на остановку. Проектируем. Производим. Отвечаем.</p>
+          <h1 className="hero-title display"><span>Строим</span><span className="outline">прочность.</span></h1>
+          <p className="hero-summary"><b>КЗМК ТЭМПО</b> — производство металлоконструкций, сварных балок и решетчатого настила для объектов любой сложности. <span style={{color:"var(--blue-light)", fontWeight:600}}>Проектируем. Производим. Поставляем.</span></p>
         </div>
-        <div className="hero-meta">55°06′ N / 32°20′ E<br />PENZA / RUSSIA</div>
+        <div className="hero-meta">55°44′ N / 52°24′ E<br />NABEREZHNY CHELNY / TATARSTAN</div>
         <div className="scroll-cue">листайте <ArrowDown size={13} strokeWidth={1} /></div>
       </div>
-      <div className="hero-scene-wrap"><IndustrialScene mode="hero" /><span className="hero-coordinate">ТЕХНОЛОГИЧЕСКИЙ КОНТУР / 1955—2025</span></div>
+      <div className="hero-scene-wrap"><IndustrialScene mode="hero" /><span className="hero-coordinate">КАМСКИЙ ЗАВОД МЕТАЛЛОКОНСТРУКЦИЙ / 2002—2025</span></div>
     </section>
   );
 }
