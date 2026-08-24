@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm --filter @workspace/penzgidromash-replica run build || pnpm -r run build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "artifacts/penzgidromash-replica/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
