@@ -1,0 +1,1 @@
+- [WebGL fallback pattern](webgl-fallback.md) — detect unavailable WebGL before constructing Three.js renderers and keep a silent local visual fallback for constrained previews.

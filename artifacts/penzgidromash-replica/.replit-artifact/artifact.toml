@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Penzgidromash Homepage Replica"
+description = "A local, single-page educational reconstruction of an industrial equipment manufacturer homepage with responsive motion and a realtime 3D vessel scene."
+version = "1.0.0"
+id = "artifacts/penzgidromash-replica"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25772
+
+[services.development]
+run = "pnpm --filter @workspace/penzgidromash-replica run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/penzgidromash-replica", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/penzgidromash-replica/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25772"
+BASE_PATH = "/"
