@@ -10,11 +10,19 @@ gsap.registerPlugin(ScrollTrigger);
 
 type IndustrialSceneProps = { mode?: "hero" | "story"; className?: string };
 
-// MacBook Silver — bright Apple aluminium (#E0E0E0), smooth studio shine
-const steel = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, metalness: 0.82, roughness: 0.16 });
-const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xd4d8dc, metalness: 0.85, roughness: 0.14 });
-const accentBlue = new THREE.MeshStandardMaterial({ color: 0xd0d4d8, metalness: 0.80, roughness: 0.18 });
-const warning = new THREE.MeshStandardMaterial({ color: 0xd8d8d8, metalness: 0.82, roughness: 0.16 });
+// MacBook Silver — bright Apple aluminium body (~80%)
+const steel = new THREE.MeshStandardMaterial({ color: 0xe2e4e8, metalness: 0.85, roughness: 0.15, envMapIntensity: 1.6 });
+const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xd4d8dc, metalness: 0.85, roughness: 0.14, envMapIntensity: 1.6 });
+// Brand Accent Blue — electric KZMK logo blue (~20% details: pipes, railings, flanges, valves)
+const accentBlue = new THREE.MeshStandardMaterial({
+  color: 0x1d69d8,
+  metalness: 0.65,
+  roughness: 0.20,
+  emissive: 0x082454,
+  emissiveIntensity: 0.35,
+  envMapIntensity: 1.8,
+});
+const warning = new THREE.MeshStandardMaterial({ color: 0x1d69d8, metalness: 0.70, roughness: 0.18, envMapIntensity: 1.6 });
 
 export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -157,18 +165,35 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     loader.load(
       "/models/tank.glb",
       (gltf) => {
+        let meshIndex = 0;
         gltf.scene.traverse((object) => {
           if (object instanceof THREE.Mesh) {
-            // Keep the model's baked steel-gray material, just ensure shadows
             object.castShadow = true;
             object.receiveShadow = true;
-            // Bright MacBook Silver — Apple aluminium (#E0E0E0) with studio reflections
-            if (object.material instanceof THREE.MeshStandardMaterial) {
-              object.material.color.set(0xe0e0e0);
-              object.material.metalness = 0.82;
-              object.material.roughness = 0.16;
-              object.material.envMapIntensity = 1.5;
-              object.material.needsUpdate = true;
+            meshIndex++;
+
+            const name = (object.name || "").toLowerCase();
+            const matName = (object.material?.name || "").toLowerCase();
+
+            // ~20% of parts (railings, pipes, nozzles, valves, rings, supports, or 1 in 5 meshes) get KZMK Brand Blue accent
+            const isAccentPart =
+              name.includes("pipe") ||
+              name.includes("rail") ||
+              name.includes("ladder") ||
+              name.includes("valve") ||
+              name.includes("nozzle") ||
+              name.includes("ring") ||
+              name.includes("flange") ||
+              name.includes("support") ||
+              name.includes("stair") ||
+              matName.includes("blue") ||
+              matName.includes("accent") ||
+              meshIndex % 5 === 0;
+
+            if (isAccentPart) {
+              object.material = accentBlue.clone();
+            } else {
+              object.material = steel.clone();
             }
           }
         });
