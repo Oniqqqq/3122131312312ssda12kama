@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter penzgidromash-replica run build && cp -r artifacts/penzgidromash-replica/dist ./dist",
+  "buildCommand": "pnpm --filter penzgidromash-replica run build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": "dist",
   "rewrites": [
