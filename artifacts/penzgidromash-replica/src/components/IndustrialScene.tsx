@@ -89,6 +89,8 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     fillBottom.position.set(0, -4, 2);
     scene.add(fillBottom);
 
+    const isMobile = window.innerWidth <= 800;
+
     const group = new THREE.Group();
     group.rotation.order = "YXZ";
     if (mode === "hero") {
@@ -96,11 +98,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       group.position.set(0, 0.5, 0); // lift so base is in frame
     } else {
       group.rotation.set(0, -0.35, 0);
-      group.position.set(1.5, 0.1, 0); // centered in right area of container grid
+      // On mobile (< 800px), center model in viewport (x = -0.1). On desktop, shift right (x = 1.5)
+      group.position.set(isMobile ? -0.1 : 1.5, isMobile ? -0.1 : 0.1, 0);
     }
     scene.add(group);
     sceneGroupRef.current = group;
-    group.scale.setScalar(0.82);
+    group.scale.setScalar(isMobile ? 0.72 : 0.82);
 
     // Inner group for user drag rotation
     const userDragGroup = new THREE.Group();
@@ -244,20 +247,26 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
         .to(group.position, { x: -0.05, y: 0, duration: 1 }, 0)
         .to(group.scale, { x: 0.85, y: 0.85, z: 0.85, duration: 1 }, 0);
     } else {
-      // Story: positioned in right column for balanced layout with left text
+      // Story: centered on mobile (x = -0.05), right column on desktop (x = 1.5)
       scrollTimeline
         .to(camera.position, { x: 5.6, y: 3.0, z: 8.0, duration: 1 }, 0)
         .to(group.rotation, { x: 0, y: -0.05, z: 0, duration: 1 }, 0)
-        .to(group.position, { x: 1.5, y: 0.1, duration: 1 }, 0)
-        .to(group.scale, { x: 0.80, y: 0.80, z: 0.80, duration: 1 }, 0);
+        .to(group.position, { x: isMobile ? -0.05 : 1.5, y: isMobile ? -0.1 : 0.1, duration: 1 }, 0)
+        .to(group.scale, { x: isMobile ? 0.72 : 0.80, y: isMobile ? 0.72 : 0.80, z: isMobile ? 0.72 : 0.80, duration: 1 }, 0);
     }
 
     let frame = 0;
     let active = true;
+    let lastWidth = 0;
+    let lastHeight = 0;
     const resize = () => {
       const bounds = canvas.getBoundingClientRect();
       const width = Math.max(1, bounds.width);
       const height = Math.max(1, bounds.height);
+      // Avoid canvas buffer clearing on minor mobile address bar height shifts
+      if (lastWidth > 0 && Math.abs(width - lastWidth) < 2 && Math.abs(height - lastHeight) < 60) return;
+      lastWidth = width;
+      lastHeight = height;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);

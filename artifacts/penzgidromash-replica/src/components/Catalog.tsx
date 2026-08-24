@@ -1,3 +1,4 @@
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { FadeUpScroll, WordReveal } from "./ScrollAnimations";
 
 const products = [
@@ -34,7 +35,7 @@ export function Catalog() {
                 <span className="catalog-num">{number}</span>
                 <span className="catalog-name">{name}</span>
                 <span className="catalog-sub">{detail}</span>
-                <span className="catalog-arrow">↗</span>
+                <span className="catalog-arrow"><ArrowUpRight size={20} /></span>
               </a>
             </FadeUpScroll>
           ))}
@@ -47,7 +48,7 @@ export function Catalog() {
             rel="noopener noreferrer"
             data-testid="link-full-catalog"
           >
-            Смотреть полный каталог <span>→</span>
+            Смотреть полный каталог <ArrowRight size={16} />
           </a>
         </FadeUpScroll>
       </div>

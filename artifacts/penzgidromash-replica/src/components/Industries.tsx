@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { FadeUpScroll, WordReveal } from "./ScrollAnimations";
 
 const industries = [
@@ -30,7 +31,7 @@ export function Industries() {
                 <span className="industry-number">{number}</span>
                 <span className="industry-name">{name}</span>
                 <span className="industry-detail">{detail}</span>
-                <span className="industry-arrow">↗</span>
+                <span className="industry-arrow"><ArrowUpRight size={18} /></span>
               </a>
             </FadeUpScroll>
           ))}
