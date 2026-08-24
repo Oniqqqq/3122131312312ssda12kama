@@ -9,11 +9,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 type IndustrialSceneProps = { mode?: "hero" | "story"; className?: string };
 
-// MacBook Silver — bright polished aluminium, blue only from rim light
-const steel = new THREE.MeshStandardMaterial({ color: 0xd0d0d0, metalness: 0.90, roughness: 0.18 });
-const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, metalness: 0.92, roughness: 0.14 });
-const accentBlue = new THREE.MeshStandardMaterial({ color: 0xbcbcbc, metalness: 0.88, roughness: 0.20 });
-const warning = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, metalness: 0.85, roughness: 0.22 });
+// MacBook Silver — true Apple aluminium, #C8C8C8, mirror-smooth polished
+const steel = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, metalness: 0.95, roughness: 0.06 });
+const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xb0b4b8, metalness: 0.97, roughness: 0.04 });
+const accentBlue = new THREE.MeshStandardMaterial({ color: 0xc4c8cc, metalness: 0.94, roughness: 0.07 });
+const warning = new THREE.MeshStandardMaterial({ color: 0xcacaca, metalness: 0.92, roughness: 0.08 });
 
 export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,24 +46,28 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     // Camera tuned: model centered in right column, fully visible
     camera.position.set(mode === "hero" ? 6.5 : 5.8, 3.5, mode === "hero" ? 9.0 : 7.2);
     camera.lookAt(0, 0.5, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.05;
 
-    // Neutral warm fill — no colour cast on the model body
-    const ambient = new THREE.HemisphereLight(0xd8d4ce, 0x1c1c1c, 0.9);
+    // Neutral white hemisphere — pure aluminium with no colour cast
+    const ambient = new THREE.HemisphereLight(0xe8e8e8, 0x181818, 1.1);
     scene.add(ambient);
-    // Warm key from upper-left — reveals the grey metal form
-    const key = new THREE.DirectionalLight(0xfff5e8, 2.8);
-    key.position.set(-4, 6, 7);
+    // Neutral-white key from upper-left — renders the polished aluminium form
+    const key = new THREE.DirectionalLight(0xffffff, 3.2);
+    key.position.set(-4, 7, 8);
     scene.add(key);
-    // Cold blue rim from back-right — this is the ONLY blue accent (reflection effect)
-    const rim = new THREE.DirectionalLight(0x3a78c4, 3.2);
-    rim.position.set(5, 1, -4);
+    // Apple-style cold blue rim from back-right — the signature MacBook sheen
+    const rim = new THREE.DirectionalLight(0x4a90d9, 4.0);
+    rim.position.set(6, 2, -5);
     scene.add(rim);
-    // Subtle fill from below to lift shadows
-    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
+    // Secondary cooler fill from right to pop edge highlights
+    const fill2 = new THREE.DirectionalLight(0xd0e8ff, 1.2);
+    fill2.position.set(4, 3, 4);
+    scene.add(fill2);
+    // Subtle bounce from below to lift dark undersides
+    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
     fill.position.set(0, -3, 3);
     scene.add(fill);
 
@@ -148,12 +152,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
             // Keep the model's baked steel-gray material, just ensure shadows
             object.castShadow = true;
             object.receiveShadow = true;
-            // MacBook Silver — bright polished aluminium
+            // True MacBook Silver — Apple aluminium #C8C8C8, mirror-polished
             if (object.material instanceof THREE.MeshStandardMaterial) {
-              object.material.color.set(0xd4d4d4);
-              object.material.metalness = 0.92;
-              object.material.roughness = 0.12;
-              object.material.envMapIntensity = 0.75;
+              object.material.color.set(0xc8c8c8);
+              object.material.metalness = 0.95;
+              object.material.roughness = 0.06;
+              object.material.envMapIntensity = 1.2;
               object.material.needsUpdate = true;
             }
           }
