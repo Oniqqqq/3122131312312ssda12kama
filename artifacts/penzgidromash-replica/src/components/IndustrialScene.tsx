@@ -130,6 +130,11 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     let userRotY = 0;
 
     const onPointerDown = (e: PointerEvent) => {
+      // Don't capture drag if user touched the story copy text area
+      const targetEl = e.target as HTMLElement | null;
+      if (targetEl?.closest?.(".story-copy")) {
+        return;
+      }
       isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
