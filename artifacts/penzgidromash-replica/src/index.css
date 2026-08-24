@@ -162,12 +162,20 @@ a { color: inherit; text-decoration: none; }
 .hero-title { margin: 0; color: #eef2f8; font-size: clamp(64px, 10vw, 160px); line-height: .88; }
 .hero-title span { display: block; }
 .hero-title .outline {
-  color: transparent;
-  -webkit-text-stroke: 2.5px #ffffff;
-  mix-blend-mode: difference;
   position: relative;
-  z-index: 5;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  display: inline-block;
+  color: transparent;
+  -webkit-text-stroke: 2px #2575fc;
+  text-stroke: 2px #2575fc;
+}
+.hero-title .outline::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 0;
+  color: transparent;
+  -webkit-text-stroke: 2px #ffffff;
+  mix-blend-mode: difference;
+  pointer-events: none;
 }
 .hero-summary b { color: var(--text-on-dark); font-weight: 600; }
 /* Canvas right column, mask fades bottom softly — no hard clip */

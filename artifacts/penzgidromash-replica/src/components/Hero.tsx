@@ -6,7 +6,7 @@ export function Hero() {
     <section className="hero" id="top" data-testid="section-hero">
       <div className="container">
         <div className="hero-copy">
-          <h1 className="hero-title display"><span>Строим</span><span className="outline">прочность.</span></h1>
+          <h1 className="hero-title display"><span>Строим</span><span className="outline" data-text="прочность.">прочность.</span></h1>
           <p className="hero-summary"><b>КЗМК ТЭМПО</b> — производство металлоконструкций, сварных балок и решетчатого настила для объектов любой сложности. <span style={{color:"var(--blue-light)", fontWeight:600}}>Проектируем. Производим. Поставляем.</span></p>
         </div>
         <div className="hero-meta">55°44′ N / 52°24′ E<br />NABEREZHNY CHELNY / TATARSTAN</div>
