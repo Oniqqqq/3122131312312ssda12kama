@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -9,11 +10,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 type IndustrialSceneProps = { mode?: "hero" | "story"; className?: string };
 
-// MacBook Silver — true Apple aluminium, #C8C8C8, mirror-smooth polished
-const steel = new THREE.MeshStandardMaterial({ color: 0xc8c8c8, metalness: 0.95, roughness: 0.06 });
-const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xb0b4b8, metalness: 0.97, roughness: 0.04 });
-const accentBlue = new THREE.MeshStandardMaterial({ color: 0xc4c8cc, metalness: 0.94, roughness: 0.07 });
-const warning = new THREE.MeshStandardMaterial({ color: 0xcacaca, metalness: 0.92, roughness: 0.08 });
+// MacBook Silver — bright Apple aluminium (#E0E0E0), smooth studio shine
+const steel = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, metalness: 0.82, roughness: 0.16 });
+const edgeSteel = new THREE.MeshStandardMaterial({ color: 0xd4d8dc, metalness: 0.85, roughness: 0.14 });
+const accentBlue = new THREE.MeshStandardMaterial({ color: 0xd0d4d8, metalness: 0.80, roughness: 0.18 });
+const warning = new THREE.MeshStandardMaterial({ color: 0xd8d8d8, metalness: 0.82, roughness: 0.16 });
 
 export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,27 +50,36 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.45;
 
-    // Neutral white hemisphere — pure aluminium with no colour cast
-    const ambient = new THREE.HemisphereLight(0xe8e8e8, 0x181818, 1.1);
+    // Generate procedural studio environment map for bright silver metal reflections
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
+    const roomEnvironment = new RoomEnvironment();
+    const envTexture = pmremGenerator.fromScene(roomEnvironment).texture;
+    scene.environment = envTexture;
+    roomEnvironment.dispose();
+    pmremGenerator.dispose();
+
+    // Neutral bright ambient light
+    const ambient = new THREE.HemisphereLight(0xffffff, 0x444444, 1.8);
     scene.add(ambient);
-    // Neutral-white key from upper-left — renders the polished aluminium form
-    const key = new THREE.DirectionalLight(0xffffff, 3.2);
-    key.position.set(-4, 7, 8);
+    // Bright key light from top-left
+    const key = new THREE.DirectionalLight(0xffffff, 4.5);
+    key.position.set(-5, 8, 8);
     scene.add(key);
-    // Apple-style cold blue rim from back-right — the signature MacBook sheen
-    const rim = new THREE.DirectionalLight(0x4a90d9, 4.0);
-    rim.position.set(6, 2, -5);
+    // Apple cold blue rim light from back-right
+    const rim = new THREE.DirectionalLight(0x5a9ee6, 4.8);
+    rim.position.set(6, 3, -5);
     scene.add(rim);
-    // Secondary cooler fill from right to pop edge highlights
-    const fill2 = new THREE.DirectionalLight(0xd0e8ff, 1.2);
-    fill2.position.set(4, 3, 4);
-    scene.add(fill2);
-    // Subtle bounce from below to lift dark undersides
-    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
-    fill.position.set(0, -3, 3);
-    scene.add(fill);
+    // Front fill light to illuminate dark metal pockets
+    const fillFront = new THREE.DirectionalLight(0xffffff, 2.0);
+    fillFront.position.set(0, 2, 8);
+    scene.add(fillFront);
+    // Subtle bounce from below
+    const fillBottom = new THREE.DirectionalLight(0xffffff, 1.2);
+    fillBottom.position.set(0, -4, 2);
+    scene.add(fillBottom);
 
     const group = new THREE.Group();
     group.rotation.order = "YXZ";
@@ -152,12 +162,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
             // Keep the model's baked steel-gray material, just ensure shadows
             object.castShadow = true;
             object.receiveShadow = true;
-            // True MacBook Silver — Apple aluminium #C8C8C8, mirror-polished
+            // Bright MacBook Silver — Apple aluminium (#E0E0E0) with studio reflections
             if (object.material instanceof THREE.MeshStandardMaterial) {
-              object.material.color.set(0xc8c8c8);
-              object.material.metalness = 0.95;
-              object.material.roughness = 0.06;
-              object.material.envMapIntensity = 1.2;
+              object.material.color.set(0xe0e0e0);
+              object.material.metalness = 0.82;
+              object.material.roughness = 0.16;
+              object.material.envMapIntensity = 1.5;
               object.material.needsUpdate = true;
             }
           }
