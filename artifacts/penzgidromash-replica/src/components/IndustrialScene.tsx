@@ -165,35 +165,47 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     loader.load(
       "/models/tank.glb",
       (gltf) => {
-        let meshIndex = 0;
+        const silver = new THREE.Color(0xe0e2e5); // Bright MacBook Silver
+        const brandBlue = new THREE.Color(0x1d69d8); // KZMK Brand Electric Blue
+
         gltf.scene.traverse((object) => {
           if (object instanceof THREE.Mesh) {
             object.castShadow = true;
             object.receiveShadow = true;
-            meshIndex++;
 
-            const name = (object.name || "").toLowerCase();
-            const matName = (object.material?.name || "").toLowerCase();
+            const geometry = object.geometry.clone();
+            const pos = geometry.attributes.position;
+            if (pos) {
+              const colors = new Float32Array(pos.count * 3);
 
-            // ~20% of parts (railings, pipes, nozzles, valves, rings, supports, or 1 in 5 meshes) get KZMK Brand Blue accent
-            const isAccentPart =
-              name.includes("pipe") ||
-              name.includes("rail") ||
-              name.includes("ladder") ||
-              name.includes("valve") ||
-              name.includes("nozzle") ||
-              name.includes("ring") ||
-              name.includes("flange") ||
-              name.includes("support") ||
-              name.includes("stair") ||
-              matName.includes("blue") ||
-              matName.includes("accent") ||
-              meshIndex % 5 === 0;
+              for (let i = 0; i < pos.count; i++) {
+                const x = pos.getX(i);
+                const y = pos.getY(i);
+                const z = pos.getZ(i);
+                const radius = Math.hypot(x, z);
 
-            if (isAccentPart) {
-              object.material = accentBlue.clone();
-            } else {
-              object.material = steel.clone();
+                // ~20% accent blue for outer railings, platform levels, stairs, rings & top nozzles
+                const isAccent =
+                  (radius > 1.02 && radius < 1.32) || // Middle platform railings & stairs
+                  (y > 0.42 && y < 0.58) ||           // Upper structural ring & beam level
+                  (y > 1.62) ||                       // Top nozzles & valves
+                  (radius > 1.82);                    // Outer pipe racks
+
+                const col = isAccent ? brandBlue : silver;
+                colors[i * 3] = col.r;
+                colors[i * 3 + 1] = col.g;
+                colors[i * 3 + 2] = col.b;
+              }
+
+              geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+              object.geometry = geometry;
+
+              object.material = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                metalness: 0.82,
+                roughness: 0.16,
+                envMapIntensity: 1.8,
+              });
             }
           }
         });
