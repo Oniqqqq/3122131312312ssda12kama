@@ -50,7 +50,7 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
     } catch {
       return;
     }
-    const isMobile = window.innerWidth <= 800;
+    const isMobile = window.innerWidth <= 900;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(20, 1, 0.1, 100);
     if (mode === "hero") {
@@ -58,7 +58,7 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       camera.lookAt(0, 0.5, 0);
     } else {
       if (isMobile) {
-        camera.position.set(0, 2.2, 8.5);
+        camera.position.set(0, 1.8, 8.5);
         camera.lookAt(0, -0.2, 0);
       } else {
         camera.position.set(5.8, 3.5, 7.2);
@@ -106,12 +106,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
       group.position.set(0, 0.5, 0); // lift so base is in frame
     } else {
       group.rotation.set(0, -0.35, 0);
-      // On mobile (< 800px), center model in viewport (x = 0.0, y = -0.4). On desktop, shift right (x = 1.5)
-      group.position.set(isMobile ? 0.0 : 1.5, isMobile ? -0.4 : 0.1, 0);
+      // On mobile (<= 900px), center model in viewport (x = -0.35, y = -0.45). On desktop, shift right (x = 1.5)
+      group.position.set(isMobile ? -0.35 : 1.5, isMobile ? -0.45 : 0.1, 0);
     }
     scene.add(group);
     sceneGroupRef.current = group;
-    group.scale.setScalar(isMobile ? 0.62 : 0.82);
+    group.scale.setScalar(isMobile ? 0.55 : 0.82);
 
     // Inner group for user drag rotation
     const userDragGroup = new THREE.Group();
@@ -255,12 +255,12 @@ export function IndustrialScene({ mode = "hero", className = "" }: IndustrialSce
         .to(group.position, { x: -0.05, y: 0, duration: 1 }, 0)
         .to(group.scale, { x: 0.85, y: 0.85, z: 0.85, duration: 1 }, 0);
     } else {
-      // Story: centered on mobile (x = 0.0, y = -0.4), right column on desktop (x = 1.5)
+      // Story: centered on mobile (x = -0.35, y = -0.45), right column on desktop (x = 1.5)
       scrollTimeline
-        .to(camera.position, { x: isMobile ? 0.0 : 5.6, y: isMobile ? 2.2 : 3.0, z: isMobile ? 8.5 : 8.0, duration: 1 }, 0)
+        .to(camera.position, { x: isMobile ? 0.0 : 5.6, y: isMobile ? 1.8 : 3.0, z: isMobile ? 8.5 : 8.0, duration: 1 }, 0)
         .to(group.rotation, { x: 0, y: -0.05, z: 0, duration: 1 }, 0)
-        .to(group.position, { x: isMobile ? 0.0 : 1.5, y: isMobile ? -0.4 : 0.1, duration: 1 }, 0)
-        .to(group.scale, { x: isMobile ? 0.62 : 0.80, y: isMobile ? 0.62 : 0.80, z: isMobile ? 0.62 : 0.80, duration: 1 }, 0);
+        .to(group.position, { x: isMobile ? -0.35 : 1.5, y: isMobile ? -0.45 : 0.1, duration: 1 }, 0)
+        .to(group.scale, { x: isMobile ? 0.55 : 0.80, y: isMobile ? 0.55 : 0.80, z: isMobile ? 0.55 : 0.80, duration: 1 }, 0);
     }
 
     let frame = 0;
